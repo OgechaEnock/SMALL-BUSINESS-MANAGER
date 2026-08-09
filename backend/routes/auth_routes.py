@@ -95,3 +95,55 @@ def register():
         },
         "access_token": access_token
     }, 201
+
+    @auth_bp.route("/login", methods=["POST"])
+def login():
+    data = request.get_json()
+
+    if not data:
+        return {
+            "error": "Request body is required"
+        }, 400
+
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email:
+        return {
+            "error": "Email is required"
+        }, 400
+
+    if not password:
+        return {
+            "error": "Password is required"
+        }, 400
+
+    user = User.query.filter_by(
+        email=email
+    ).first()
+
+    if not user:
+        return {
+            "error": "Invalid email or password"
+        }, 401
+
+    if not user.check_password(password):
+        return {
+            "error": "Invalid email or password"
+        }, 401
+
+    access_token = create_access_token(
+        identity=str(user.id)
+    )
+
+    return {
+        "message": "Login successful",
+        "access_token": access_token,
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role,
+            "business_id": user.business_id
+        }
+    }, 200
