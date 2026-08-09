@@ -3,10 +3,11 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from config import Config
 from db import db
-from models import Business, User
+from models import Business, User, Product
 from routes.business_routes import business_bp
 from flask_jwt_extended import JWTManager
 from routes.auth_routes import auth_bp
+from routes.product_routes import product_bp
 
 
 def create_app():
@@ -20,6 +21,7 @@ def create_app():
 
     app.register_blueprint(business_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(product_bp)
 
     @app.route("/")
     def home():
