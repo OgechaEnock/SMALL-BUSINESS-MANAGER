@@ -8,6 +8,8 @@ from routes.business_routes import business_bp
 from flask_jwt_extended import JWTManager
 from routes.auth_routes import auth_bp
 from routes.product_routes import product_bp
+from models.sale import Sale
+from routes.sale_routes import sale_bp
 
 
 def create_app():
@@ -22,6 +24,7 @@ def create_app():
     app.register_blueprint(business_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(product_bp)
+    app.register_blueprint(sale_bp)
 
     @app.route("/")
     def home():

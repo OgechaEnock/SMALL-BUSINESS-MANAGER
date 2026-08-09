@@ -7,6 +7,7 @@ function Sales() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -72,7 +73,7 @@ function Sales() {
   );
 
   const total = selectedProduct
-    ? selectedProduct.selling_price *
+    ? Number(selectedProduct.selling_price) *
       quantity
     : 0;
 
@@ -113,7 +114,7 @@ function Sales() {
           product_id: Number(
             formData.product_id
           ),
-          quantity: quantity,
+          quantity,
         }
       );
 
@@ -202,16 +203,12 @@ function Sales() {
                       product.quantity === 0
                     }
                   >
-                    {product.name} -
-                    {" "}
-                    KES{" "}
+                    {product.name} - KES{" "}
                     {
                       product.selling_price
-                    }
-                    {" "}
+                    }{" "}
                     (
                     {product.quantity}
-                    {" "}
                     available)
                   </option>
                 )
@@ -255,12 +252,10 @@ function Sales() {
             />
           </div>
 
-          <div>
-            <h3>
-              Total: KES{" "}
-              {total.toFixed(2)}
-            </h3>
-          </div>
+          <h3>
+            Total: KES{" "}
+            {total.toFixed(2)}
+          </h3>
 
           <button
             type="submit"
@@ -307,16 +302,16 @@ function Sales() {
 
                   <td>
                     KES{" "}
-                    {sale.unit_price.toFixed(
-                      2
-                    )}
+                    {Number(
+                      sale.unit_price
+                    ).toFixed(2)}
                   </td>
 
                   <td>
                     KES{" "}
-                    {sale.total_amount.toFixed(
-                      2
-                    )}
+                    {Number(
+                      sale.total_amount
+                    ).toFixed(2)}
                   </td>
 
                   <td>
