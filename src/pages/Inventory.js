@@ -3,9 +3,12 @@ import api from "../services/api";
 
 function Inventory() {
   const [products, setProducts] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [showForm, setShowForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -50,55 +53,128 @@ function Inventory() {
     }));
   };
 
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      description: "",
+      sku: "",
+      selling_price: "",
+      cost_price: "",
+      quantity: "",
+      low_stock_threshold: 5,
+    });
+
+    setEditingProduct(null);
+    setShowForm(false);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     setError("");
 
     try {
-      const response = await api.post(
-        "/products/",
-        {
-          name: formData.name,
-          description: formData.description,
-          sku: formData.sku,
-          selling_price: Number(
-            formData.selling_price
-          ),
-          cost_price: Number(
-            formData.cost_price
-          ),
-          quantity: Number(
-            formData.quantity
-          ),
-          low_stock_threshold: Number(
-            formData.low_stock_threshold
-          ),
-        }
-      );
+      const productData = {
+        name: formData.name,
+        description: formData.description,
+        sku: formData.sku,
+        selling_price: Number(
+          formData.selling_price
+        ),
+        cost_price: Number(
+          formData.cost_price
+        ),
+        quantity: Number(
+          formData.quantity
+        ),
+        low_stock_threshold: Number(
+          formData.low_stock_threshold
+        ),
+      };
 
-      setProducts((previous) => [
-        response.data.product,
-        ...previous,
-      ]);
+      if (editingProduct) {
+        const response = await api.put(
+          `/products/${editingProduct.id}`,
+          productData
+        );
 
-      setFormData({
-        name: "",
-        description: "",
-        sku: "",
-        selling_price: "",
-        cost_price: "",
-        quantity: "",
-        low_stock_threshold: 5,
-      });
+        setProducts((previous) =>
+          previous.map((product) =>
+            product.id === editingProduct.id
+              ? response.data.product
+              : product
+          )
+        );
+      } else {
+        const response = await api.post(
+          "/products/",
+          productData
+        );
 
-      setShowForm(false);
+        setProducts((previous) => [
+          response.data.product,
+          ...previous,
+        ]);
+      }
+
+      resetForm();
     } catch (error) {
       console.error(error);
 
       setError(
         error.response?.data?.error ||
-          "Failed to create product"
+          "Failed to save product"
+      );
+    }
+  };
+
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+
+    setFormData({
+      name: product.name || "",
+      description: product.description || "",
+      sku: product.sku || "",
+      selling_price:
+        product.selling_price ?? "",
+      cost_price:
+        product.cost_price ?? "",
+      quantity:
+        product.quantity ?? "",
+      low_stock_threshold:
+        product.low_stock_threshold ?? 5,
+    });
+
+    setShowForm(true);
+  };
+
+  const handleDelete = async (product) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${product.name}"?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setError("");
+
+      await api.delete(
+        `/products/${product.id}`
+      );
+
+      setProducts((previous) =>
+        previous.filter(
+          (item) => item.id !== product.id
+        )
+      );
+    } catch (error) {
+      console.error(error);
+
+      setError(
+        error.response?.data?.error ||
+          "Failed to delete product"
       );
     }
   };
@@ -113,9 +189,13 @@ function Inventory() {
         <h1>Inventory</h1>
 
         <button
-          onClick={() =>
-            setShowForm(!showForm)
-          }
+          onClick={() => {
+            if (showForm) {
+              resetForm();
+            } else {
+              setShowForm(true);
+            }
+          }}
         >
           {showForm
             ? "Cancel"
@@ -129,7 +209,11 @@ function Inventory() {
 
       {showForm && (
         <form onSubmit={handleSubmit}>
-          <h2>Add Product</h2>
+          <h2>
+            {editingProduct
+              ? "Edit Product"
+              : "Add Product"}
+          </h2>
 
           <div>
             <label>
@@ -235,8 +319,19 @@ function Inventory() {
           </div>
 
           <button type="submit">
-            Save Product
+            {editingProduct
+              ? "Update Product"
+              : "Save Product"}
           </button>
+
+          {editingProduct && (
+            <button
+              type="button"
+              onClick={resetForm}
+            >
+              Cancel Edit
+            </button>
+          )}
         </form>
       )}
 
@@ -254,6 +349,7 @@ function Inventory() {
               <th>Cost Price</th>
               <th>Quantity</th>
               <th>Stock Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
 
@@ -265,26 +361,50 @@ function Inventory() {
 
               return (
                 <tr key={product.id}>
-                  <td>{product.name}</td>
+                  <td>
+                    {product.name}
+                  </td>
 
                   <td>
                     {product.sku || "-"}
                   </td>
 
                   <td>
-                    KES {product.selling_price}
+                    KES{" "}
+                    {product.selling_price}
                   </td>
 
                   <td>
-                    KES {product.cost_price}
+                    KES{" "}
+                    {product.cost_price}
                   </td>
 
-                  <td>{product.quantity}</td>
+                  <td>
+                    {product.quantity}
+                  </td>
 
                   <td>
                     {lowStock
                       ? "Low Stock"
                       : "In Stock"}
+                  </td>
+
+                  <td>
+                    <button
+                      onClick={() =>
+                        handleEdit(product)
+                      }
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        handleDelete(product)
+                      }
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               );
