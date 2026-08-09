@@ -1,31 +1,66 @@
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
 import Login from "./pages/Login";
-import { useAuth } from "./context/AuthContext";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
 
-function App() {
-  const { user, logout, loading } = useAuth();
+import ProtectedRoute from "./components/ProtectedRoute";
+import Sidebar from "./components/Sidebar";
+import Navbar from "./components/Navbar";
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
 
-  if (!user) {
-    return <Login />;
-  }
-
+function DashboardLayout() {
   return (
     <div>
-      <h1>Welcome, {user.name}</h1>
+      <Navbar />
 
-      <p>{user.email}</p>
+      <div>
+        <Sidebar />
 
-      <p>Role: {user.role}</p>
-
-      <p>Business ID: {user.business_id}</p>
-
-      <button onClick={logout}>
-        Logout
-      </button>
+        <main>
+          <Routes>
+            <Route
+              path="/dashboard"
+              element={<Dashboard />}
+            />
+          </Routes>
+        </main>
+      </div>
     </div>
+  );
+}
+
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        <Route element={<ProtectedRoute />}>
+
+          <Route
+            path="/*"
+            element={<DashboardLayout />}
+          />
+
+        </Route>
+
+      </Routes>
+    </BrowserRouter>
   );
 }
 
