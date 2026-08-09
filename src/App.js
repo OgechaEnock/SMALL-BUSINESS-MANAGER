@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
+import Sales from "./pages/Sales";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Sidebar from "./components/Sidebar";
@@ -32,6 +33,10 @@ function DashboardLayout() {
             <Route
               path="/inventory"
               element={<Inventory />}
+            />
+            <Route
+              path="/sales"
+              element={<Sales />}
             />
           </Routes>
         </main>
