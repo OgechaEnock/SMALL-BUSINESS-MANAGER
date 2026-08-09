@@ -7,6 +7,7 @@ import {
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Inventory from "./pages/Inventory";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Sidebar from "./components/Sidebar";
@@ -26,6 +27,11 @@ function DashboardLayout() {
             <Route
               path="/dashboard"
               element={<Dashboard />}
+            />
+
+            <Route
+              path="/inventory"
+              element={<Inventory />}
             />
           </Routes>
         </main>
@@ -51,12 +57,10 @@ function App() {
         />
 
         <Route element={<ProtectedRoute />}>
-
           <Route
             path="/*"
             element={<DashboardLayout />}
           />
-
         </Route>
 
       </Routes>
@@ -64,4 +68,6 @@ function App() {
   );
 }
 
+
 export default App;
+
