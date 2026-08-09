@@ -1,23 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import Login from "./pages/Login";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
+  const { user, logout, loading } = useAuth();
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!user) {
+    return <Login />;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Welcome, {user.name}</h1>
+
+      <p>{user.email}</p>
+
+      <p>Role: {user.role}</p>
+
+      <p>Business ID: {user.business_id}</p>
+
+      <button onClick={logout}>
+        Logout
+      </button>
     </div>
   );
 }
