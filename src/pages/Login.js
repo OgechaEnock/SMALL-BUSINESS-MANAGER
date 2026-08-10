@@ -1,78 +1,127 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import "./Auth.css";
 
 function Login() {
-  const { login, loading } = useAuth();
-
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { login } = useAuth();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     setError("");
+    setLoading(true);
 
-    const result = await login(email, password);
+    const result = await login(
+      formData.email,
+      formData.password
+    );
 
-    if (!result.success) {
+    if (result.success) {
+      navigate("/dashboard");
+    } else {
       setError(result.error);
-      return;
     }
 
-    navigate("/dashboard");
+    setLoading(false);
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="auth-page">
 
-      {error && (
-        <p>{error}</p>
-      )}
+      <div className="auth-card">
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">
-            Email
-          </label>
+        <h1>Welcome Back</h1>
 
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(event) =>
-              setEmail(event.target.value)
-            }
-            required
-          />
-        </div>
+        <p>
+          Sign in to your business account
+        </p>
 
-        <div>
-          <label htmlFor="password">
-            Password
-          </label>
+        {error && (
+          <div className="auth-error">
+            {error}
+          </div>
+        )}
 
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(event) =>
-              setPassword(event.target.value)
-            }
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit}>
 
-        <button
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+          <div className="form-group">
+
+            <label htmlFor="email">
+              Email
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              required
+            />
+
+          </div>
+
+          <div className="form-group">
+
+            <label htmlFor="password">
+              Password
+            </label>
+
+            <input
+              id="password"
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              required
+            />
+
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+          >
+            {loading
+              ? "Signing in..."
+              : "Login"}
+          </button>
+
+        </form>
+
+        <p className="auth-footer">
+
+          Don't have an account?{" "}
+
+          <Link to="/register">
+            Create an account
+          </Link>
+
+        </p>
+
+      </div>
+
     </div>
   );
 }
