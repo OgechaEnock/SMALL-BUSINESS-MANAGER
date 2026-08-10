@@ -16,16 +16,18 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 
+import "./App.css";
+
 
 function DashboardLayout() {
   return (
-    <div>
+    <div className="app-layout">
       <Navbar />
 
-      <div>
+      <div className="app-body">
         <Sidebar />
 
-        <main>
+        <main className="app-main">
           <Routes>
             <Route
               path="/dashboard"
@@ -81,4 +83,3 @@ function App() {
 
 
 export default App;
-
