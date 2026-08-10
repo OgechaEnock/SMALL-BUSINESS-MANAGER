@@ -11,6 +11,7 @@ from routes.product_routes import product_bp
 from models.sale import Sale
 from routes.sale_routes import sale_bp
 from routes.dashboard_routes import dashboard_bp
+from routes.customer_routes import customer_bp
 
 
 def create_app():
@@ -26,6 +27,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(product_bp)
     app.register_blueprint(sale_bp)
+    app.register_blueprint(customer_bp)
     app.register_blueprint(dashboard_bp)
 
     @app.route("/")

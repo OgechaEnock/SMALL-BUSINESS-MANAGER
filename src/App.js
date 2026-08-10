@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
 import Sales from "./pages/Sales";
+import Customers from "./pages/Customers";
 
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -29,6 +30,10 @@ function DashboardLayout() {
             <Route
               path="/dashboard"
               element={<Dashboard />}
+            />
+            <Route
+              path="/customers"
+              element={<Customers />}
             />
 
             <Route
