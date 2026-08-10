@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import "./Customers.css";
 
 function Customers() {
   const [customers, setCustomers] = useState([]);
@@ -199,30 +200,48 @@ function Customers() {
     });
 
   if (loading) {
-    return <p>Loading customers...</p>;
+    return (
+      <div className="customers-loading">
+        Loading customers...
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1>Customers</h1>
+    <div className="customers-page">
+      <div className="customers-header">
+        <div>
+          <h1>Customers</h1>
+          <p>
+            Manage your customer contacts
+          </p>
+        </div>
+      </div>
 
       {error && (
-        <p>{error}</p>
+        <div className="alert-error">
+          {error}
+        </div>
       )}
 
       {success && (
-        <p>{success}</p>
+        <div className="alert-success">
+          {success}
+        </div>
       )}
 
-      <section>
+      <section className="customers-section">
         <h2>
           {editingId
             ? "Edit Customer"
             : "Add Customer"}
         </h2>
 
-        <form onSubmit={handleSubmit}>
-          <div>
+        <form
+          className="customers-form"
+          onSubmit={handleSubmit}
+        >
+          <div className="form-group">
             <label>
               Name
             </label>
@@ -236,7 +255,7 @@ function Customers() {
             />
           </div>
 
-          <div>
+          <div className="form-group">
             <label>
               Phone
             </label>
@@ -249,7 +268,7 @@ function Customers() {
             />
           </div>
 
-          <div>
+          <div className="form-group">
             <label>
               Email
             </label>
@@ -262,7 +281,7 @@ function Customers() {
             />
           </div>
 
-          <div>
+          <div className="form-group">
             <label>
               Address
             </label>
@@ -277,6 +296,7 @@ function Customers() {
 
           <button
             type="submit"
+            className="btn-primary"
             disabled={saving}
           >
             {saving
@@ -289,6 +309,7 @@ function Customers() {
           {editingId && (
             <button
               type="button"
+              className="btn-secondary"
               onClick={resetForm}
             >
               Cancel
@@ -297,13 +318,12 @@ function Customers() {
         </form>
       </section>
 
-      <hr />
-
-      <section>
+      <section className="customers-section">
         <h2>Customer List</h2>
 
         <input
           type="search"
+          className="search-input"
           placeholder="Search customers..."
           value={search}
           onChange={(event) =>
@@ -319,63 +339,67 @@ function Customers() {
               : "No customers found."}
           </p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+          <div className="customers-table-wrapper">
+            <table className="customers-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Address</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              {filteredCustomers.map(
-                (customer) => (
-                  <tr key={customer.id}>
-                    <td>
-                      {customer.name}
-                    </td>
+              <tbody>
+                {filteredCustomers.map(
+                  (customer) => (
+                    <tr key={customer.id}>
+                      <td>
+                        {customer.name}
+                      </td>
 
-                    <td>
-                      {customer.phone || "-"}
-                    </td>
+                      <td>
+                        {customer.phone || "-"}
+                      </td>
 
-                    <td>
-                      {customer.email || "-"}
-                    </td>
+                      <td>
+                        {customer.email || "-"}
+                      </td>
 
-                    <td>
-                      {customer.address || "-"}
-                    </td>
+                      <td>
+                        {customer.address || "-"}
+                      </td>
 
-                    <td>
-                      <button
-                        onClick={() =>
-                          handleEdit(
-                            customer
-                          )
-                        }
-                      >
-                        Edit
-                      </button>
+                      <td>
+                        <button
+                          className="btn-secondary"
+                          onClick={() =>
+                            handleEdit(
+                              customer
+                            )
+                          }
+                        >
+                          Edit
+                        </button>
 
-                      <button
-                        onClick={() =>
-                          handleDelete(
-                            customer.id
-                          )
-                        }
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
+                        <button
+                          className="btn-danger"
+                          onClick={() =>
+                            handleDelete(
+                              customer.id
+                            )
+                          }
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
     </div>
