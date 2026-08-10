@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import "./Sales.css";
 
 function Sales() {
   const [sales, setSales] = useState([]);
@@ -139,26 +140,44 @@ function Sales() {
     : 0;
 
   if (loading) {
-    return <p>Loading sales...</p>;
+    return (
+      <div className="sales-loading">
+        Loading sales...
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1>Sales</h1>
+    <div className="sales-page">
+      <div className="sales-header">
+        <div>
+          <h1>Sales</h1>
+          <p>
+            Record and track your sales
+          </p>
+        </div>
+      </div>
 
       {error && (
-        <p>{error}</p>
+        <div className="alert-error">
+          {error}
+        </div>
       )}
 
       {success && (
-        <p>{success}</p>
+        <div className="alert-success">
+          {success}
+        </div>
       )}
 
-      <section>
+      <section className="sales-section">
         <h2>Record Sale</h2>
 
-        <form onSubmit={handleSubmit}>
-          <div>
+        <form
+          className="sales-form"
+          onSubmit={handleSubmit}
+        >
+          <div className="form-group">
             <label>
               Product
             </label>
@@ -199,7 +218,7 @@ function Sales() {
             </select>
           </div>
 
-          <div>
+          <div className="form-group">
             <label>
               Customer
             </label>
@@ -226,7 +245,7 @@ function Sales() {
             </select>
           </div>
 
-          <div>
+          <div className="form-group">
             <label>
               Quantity
             </label>
@@ -246,7 +265,7 @@ function Sales() {
             />
           </div>
 
-          <div>
+          <div className="form-total">
             <strong>
               Total: KES{" "}
               {totalAmount.toFixed(2)}
@@ -255,6 +274,7 @@ function Sales() {
 
           <button
             type="submit"
+            className="btn-primary"
             disabled={
               saving ||
               !formData.product_id
@@ -267,9 +287,7 @@ function Sales() {
         </form>
       </section>
 
-      <hr />
-
-      <section>
+      <section className="sales-section">
         <h2>Sales History</h2>
 
         {sales.length === 0 ? (
@@ -277,57 +295,59 @@ function Sales() {
             No sales recorded yet.
           </p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Product</th>
-                <th>Customer</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {sales.map((sale) => (
-                <tr key={sale.id}>
-                  <td>
-                    {new Date(
-                      sale.created_at
-                    ).toLocaleString()}
-                  </td>
-
-                  <td>
-                    {sale.product_name}
-                  </td>
-
-                  <td>
-                    {sale.customer_name ||
-                      "Walk-in Customer"}
-                  </td>
-
-                  <td>
-                    {sale.quantity}
-                  </td>
-
-                  <td>
-                    KES{" "}
-                    {Number(
-                      sale.unit_price
-                    ).toFixed(2)}
-                  </td>
-
-                  <td>
-                    KES{" "}
-                    {Number(
-                      sale.total_amount
-                    ).toFixed(2)}
-                  </td>
+          <div className="sales-table-wrapper">
+            <table className="sales-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Product</th>
+                  <th>Customer</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Total</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {sales.map((sale) => (
+                  <tr key={sale.id}>
+                    <td>
+                      {new Date(
+                        sale.created_at
+                      ).toLocaleString()}
+                    </td>
+
+                    <td>
+                      {sale.product_name}
+                    </td>
+
+                    <td>
+                      {sale.customer_name ||
+                        "Walk-in Customer"}
+                    </td>
+
+                    <td>
+                      {sale.quantity}
+                    </td>
+
+                    <td>
+                      KES{" "}
+                      {Number(
+                        sale.unit_price
+                      ).toFixed(2)}
+                    </td>
+
+                    <td>
+                      KES{" "}
+                      {Number(
+                        sale.total_amount
+                      ).toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
     </div>

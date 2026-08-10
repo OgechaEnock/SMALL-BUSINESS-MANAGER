@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import "./Inventory.css";
 
 function Inventory() {
   const [products, setProducts] = useState([]);
@@ -180,15 +181,31 @@ function Inventory() {
   };
 
   if (loading) {
-    return <p>Loading inventory...</p>;
+    return (
+      <div className="inventory-loading">
+        Loading inventory...
+      </div>
+    );
   }
 
   return (
-    <div>
-      <div>
-        <h1>Inventory</h1>
+    <div className="inventory-page">
+      <div className="inventory-header">
+        <div>
+          <h1>Inventory</h1>
+          <p>
+            Manage your products and stock
+            levels
+          </p>
+        </div>
 
         <button
+          type="button"
+          className={
+            showForm
+              ? "btn-secondary"
+              : "btn-primary"
+          }
           onClick={() => {
             if (showForm) {
               resetForm();
@@ -204,214 +221,239 @@ function Inventory() {
       </div>
 
       {error && (
-        <p>{error}</p>
+        <div className="alert-error">
+          {error}
+        </div>
       )}
 
       {showForm && (
-        <form onSubmit={handleSubmit}>
-          <h2>
-            {editingProduct
-              ? "Edit Product"
-              : "Add Product"}
-          </h2>
+        <section className="inventory-section">
+          <form
+            className="inventory-form"
+            onSubmit={handleSubmit}
+          >
+            <h2>
+              {editingProduct
+                ? "Edit Product"
+                : "Add Product"}
+            </h2>
 
-          <div>
-            <label>
-              Product Name
-            </label>
+            <div className="form-group">
+              <label>
+                Product Name
+              </label>
 
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <div>
-            <label>
-              Description
-            </label>
+            <div className="form-group">
+              <label>
+                Description
+              </label>
 
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-            />
-          </div>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+              />
+            </div>
 
-          <div>
-            <label>
-              SKU
-            </label>
+            <div className="form-group">
+              <label>
+                SKU
+              </label>
 
-            <input
-              type="text"
-              name="sku"
-              value={formData.sku}
-              onChange={handleChange}
-            />
-          </div>
+              <input
+                type="text"
+                name="sku"
+                value={formData.sku}
+                onChange={handleChange}
+              />
+            </div>
 
-          <div>
-            <label>
-              Selling Price
-            </label>
+            <div className="form-group">
+              <label>
+                Selling Price
+              </label>
 
-            <input
-              type="number"
-              name="selling_price"
-              value={formData.selling_price}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
+              <input
+                type="number"
+                name="selling_price"
+                value={formData.selling_price}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
 
-          <div>
-            <label>
-              Cost Price
-            </label>
+            <div className="form-group">
+              <label>
+                Cost Price
+              </label>
 
-            <input
-              type="number"
-              name="cost_price"
-              value={formData.cost_price}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
+              <input
+                type="number"
+                name="cost_price"
+                value={formData.cost_price}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
 
-          <div>
-            <label>
-              Quantity
-            </label>
+            <div className="form-group">
+              <label>
+                Quantity
+              </label>
 
-            <input
-              type="number"
-              name="quantity"
-              value={formData.quantity}
-              onChange={handleChange}
-              min="0"
-              required
-            />
-          </div>
+              <input
+                type="number"
+                name="quantity"
+                value={formData.quantity}
+                onChange={handleChange}
+                min="0"
+                required
+              />
+            </div>
 
-          <div>
-            <label>
-              Low Stock Threshold
-            </label>
+            <div className="form-group">
+              <label>
+                Low Stock Threshold
+              </label>
 
-            <input
-              type="number"
-              name="low_stock_threshold"
-              value={
-                formData.low_stock_threshold
-              }
-              onChange={handleChange}
-              min="0"
-              required
-            />
-          </div>
+              <input
+                type="number"
+                name="low_stock_threshold"
+                value={
+                  formData.low_stock_threshold
+                }
+                onChange={handleChange}
+                min="0"
+                required
+              />
+            </div>
 
-          <button type="submit">
-            {editingProduct
-              ? "Update Product"
-              : "Save Product"}
-          </button>
-
-          {editingProduct && (
             <button
-              type="button"
-              onClick={resetForm}
+              type="submit"
+              className="btn-primary"
             >
-              Cancel Edit
+              {editingProduct
+                ? "Update Product"
+                : "Save Product"}
             </button>
-          )}
-        </form>
+
+            {editingProduct && (
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={resetForm}
+              >
+                Cancel Edit
+              </button>
+            )}
+          </form>
+        </section>
       )}
 
-      <hr />
+      <section className="inventory-section">
+        <h2>Product List</h2>
 
-      {products.length === 0 ? (
-        <p>No products found.</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>SKU</th>
-              <th>Selling Price</th>
-              <th>Cost Price</th>
-              <th>Quantity</th>
-              <th>Stock Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {products.map((product) => {
-              const lowStock =
-                product.quantity <=
-                product.low_stock_threshold;
-
-              return (
-                <tr key={product.id}>
-                  <td>
-                    {product.name}
-                  </td>
-
-                  <td>
-                    {product.sku || "-"}
-                  </td>
-
-                  <td>
-                    KES{" "}
-                    {product.selling_price}
-                  </td>
-
-                  <td>
-                    KES{" "}
-                    {product.cost_price}
-                  </td>
-
-                  <td>
-                    {product.quantity}
-                  </td>
-
-                  <td>
-                    {lowStock
-                      ? "Low Stock"
-                      : "In Stock"}
-                  </td>
-
-                  <td>
-                    <button
-                      onClick={() =>
-                        handleEdit(product)
-                      }
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        handleDelete(product)
-                      }
-                    >
-                      Delete
-                    </button>
-                  </td>
+        {products.length === 0 ? (
+          <p>No products found.</p>
+        ) : (
+          <div className="inventory-table-wrapper">
+            <table className="inventory-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>SKU</th>
+                  <th>Selling Price</th>
+                  <th>Cost Price</th>
+                  <th>Quantity</th>
+                  <th>Stock Status</th>
+                  <th>Actions</th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      )}
+              </thead>
+
+              <tbody>
+                {products.map((product) => {
+                  const lowStock =
+                    product.quantity <=
+                    product.low_stock_threshold;
+
+                  return (
+                    <tr key={product.id}>
+                      <td>
+                        {product.name}
+                      </td>
+
+                      <td>
+                        {product.sku || "-"}
+                      </td>
+
+                      <td>
+                        KES{" "}
+                        {product.selling_price}
+                      </td>
+
+                      <td>
+                        KES{" "}
+                        {product.cost_price}
+                      </td>
+
+                      <td>
+                        {product.quantity}
+                      </td>
+
+                      <td>
+                        <span
+                          className={
+                            lowStock
+                              ? "stock-badge low-stock"
+                              : "stock-badge in-stock"
+                          }
+                        >
+                          {lowStock
+                            ? "Low Stock"
+                            : "In Stock"}
+                        </span>
+                      </td>
+
+                      <td>
+                        <button
+                          className="btn-secondary"
+                          onClick={() =>
+                            handleEdit(product)
+                          }
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          className="btn-danger"
+                          onClick={() =>
+                            handleDelete(product)
+                          }
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

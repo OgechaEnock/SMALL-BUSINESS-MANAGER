@@ -1,0 +1,194 @@
+.inventory-page {
+  padding: 24px;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.inventory-header h1 {
+  margin: 0;
+}
+
+.inventory-header p {
+  margin: 4px 0 0;
+  color: #666;
+}
+
+.inventory-section {
+  margin-top: 30px;
+}
+
+.inventory-section h2 {
+  margin-bottom: 16px;
+}
+
+.inventory-form {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  max-width: 480px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  color: #333;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.btn-primary {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  padding: 10px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.btn-danger {
+  padding: 6px 12px;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  background: #f8d7da;
+  color: #c0392b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-danger:hover {
+  background: #f1c0c0;
+}
+
+.inventory-table-wrapper {
+  overflow-x: auto;
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.inventory-table th,
+.inventory-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.inventory-table th {
+  font-weight: 600;
+}
+
+.inventory-table tbody tr:hover {
+  background: #f7f7f7;
+}
+
+.stock-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stock-badge.in-stock {
+  background: #d4edda;
+  color: #155724;
+}
+
+.stock-badge.low-stock {
+  background: #fde8d7;
+  color: #c05621;
+}
+
+.alert-error {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  background: #f8d7da;
+  color: #c0392b;
+}
+
+.inventory-loading {
+  padding: 30px;
+}
+
+@media (max-width: 600px) {
+  .inventory-page {
+    padding: 16px;
+  }
+
+  .inventory-header {
+    align-items: flex-start;
+    gap: 12px;
+    flex-direction: column;
+  }
+
+  .inventory-form {
+    padding: 16px;
+  }
+}
