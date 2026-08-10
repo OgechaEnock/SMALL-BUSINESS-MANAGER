@@ -13,6 +13,7 @@ function Customers() {
 
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState(null);
+  const [showForm, setShowForm] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -70,6 +71,7 @@ function Customers() {
     });
 
     setEditingId(null);
+    setShowForm(false);
   };
 
   const handleSubmit = async (event) => {
@@ -138,6 +140,7 @@ function Customers() {
 
     setError("");
     setSuccess("");
+    setShowForm(true);
   };
 
   const handleDelete = async (customerId) => {
@@ -216,6 +219,26 @@ function Customers() {
             Manage your customer contacts
           </p>
         </div>
+
+        <button
+          type="button"
+          className={
+            showForm
+              ? "btn-secondary"
+              : "btn-primary"
+          }
+          onClick={() => {
+            if (showForm) {
+              resetForm();
+            } else {
+              setShowForm(true);
+            }
+          }}
+        >
+          {showForm
+            ? "Cancel"
+            : "Add Customer"}
+        </button>
       </div>
 
       {error && (
@@ -230,93 +253,95 @@ function Customers() {
         </div>
       )}
 
-      <section className="customers-section">
-        <h2>
-          {editingId
-            ? "Edit Customer"
-            : "Add Customer"}
-        </h2>
-
-        <form
-          className="customers-form"
-          onSubmit={handleSubmit}
-        >
-          <div className="form-group">
-            <label>
-              Name
-            </label>
-
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>
-              Phone
-            </label>
-
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>
-              Email
-            </label>
-
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>
-              Address
-            </label>
-
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={saving}
-          >
-            {saving
-              ? "Saving..."
-              : editingId
-              ? "Update Customer"
+      {showForm && (
+        <section className="customers-section">
+          <h2>
+            {editingId
+              ? "Edit Customer"
               : "Add Customer"}
-          </button>
+          </h2>
 
-          {editingId && (
+          <form
+            className="customers-form"
+            onSubmit={handleSubmit}
+          >
+            <div className="form-group">
+              <label>
+                Name
+              </label>
+
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>
+                Phone
+              </label>
+
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>
+                Email
+              </label>
+
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>
+                Address
+              </label>
+
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+              />
+            </div>
+
             <button
-              type="button"
-              className="btn-secondary"
-              onClick={resetForm}
+              type="submit"
+              className="btn-primary"
+              disabled={saving}
             >
-              Cancel
+              {saving
+                ? "Saving..."
+                : editingId
+                ? "Update Customer"
+                : "Add Customer"}
             </button>
-          )}
-        </form>
-      </section>
+
+            {editingId && (
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={resetForm}
+              >
+                Cancel
+              </button>
+            )}
+          </form>
+        </section>
+      )}
 
       <section className="customers-section">
         <h2>Customer List</h2>

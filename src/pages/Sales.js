@@ -13,6 +13,8 @@ function Sales() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const [showForm, setShowForm] = useState(false);
+
   const [formData, setFormData] = useState({
     product_id: "",
     customer_id: "",
@@ -65,6 +67,16 @@ function Sales() {
     setSuccess("");
   };
 
+  const resetForm = () => {
+    setFormData({
+      product_id: "",
+      customer_id: "",
+      quantity: 1,
+    });
+
+    setShowForm(false);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -96,11 +108,7 @@ function Sales() {
         ...previous,
       ]);
 
-      setFormData({
-        product_id: "",
-        customer_id: "",
-        quantity: 1,
-      });
+      resetForm();
 
       setSuccess(
         "Sale created successfully"
@@ -156,6 +164,26 @@ function Sales() {
             Record and track your sales
           </p>
         </div>
+
+        <button
+          type="button"
+          className={
+            showForm
+              ? "btn-secondary"
+              : "btn-primary"
+          }
+          onClick={() => {
+            if (showForm) {
+              resetForm();
+            } else {
+              setShowForm(true);
+            }
+          }}
+        >
+          {showForm
+            ? "Cancel"
+            : "Record Sale"}
+        </button>
       </div>
 
       {error && (
@@ -170,122 +198,124 @@ function Sales() {
         </div>
       )}
 
-      <section className="sales-section">
-        <h2>Record Sale</h2>
+      {showForm && (
+        <section className="sales-section">
+          <h2>Record Sale</h2>
 
-        <form
-          className="sales-form"
-          onSubmit={handleSubmit}
-        >
-          <div className="form-group">
-            <label>
-              Product
-            </label>
-
-            <select
-              name="product_id"
-              value={formData.product_id}
-              onChange={handleChange}
-              required
-            >
-              <option value="">
-                Select product
-              </option>
-
-              {products.map(
-                (product) => (
-                  <option
-                    key={product.id}
-                    value={product.id}
-                    disabled={
-                      product.quantity <= 0
-                    }
-                  >
-                    {product.name} -
-                    {" "}
-                    KES{" "}
-                    {
-                      product.selling_price
-                    }
-                    {" "}
-                    (
-                    {product.quantity}
-                    {" "}
-                    in stock)
-                  </option>
-                )
-              )}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>
-              Customer
-            </label>
-
-            <select
-              name="customer_id"
-              value={formData.customer_id}
-              onChange={handleChange}
-            >
-              <option value="">
-                Walk-in Customer
-              </option>
-
-              {customers.map(
-                (customer) => (
-                  <option
-                    key={customer.id}
-                    value={customer.id}
-                  >
-                    {customer.name}
-                  </option>
-                )
-              )}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>
-              Quantity
-            </label>
-
-            <input
-              type="number"
-              name="quantity"
-              value={formData.quantity}
-              onChange={handleChange}
-              min="1"
-              max={
-                selectedProduct
-                  ? selectedProduct.quantity
-                  : undefined
-              }
-              required
-            />
-          </div>
-
-          <div className="form-total">
-            <strong>
-              Total: KES{" "}
-              {totalAmount.toFixed(2)}
-            </strong>
-          </div>
-
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={
-              saving ||
-              !formData.product_id
-            }
+          <form
+            className="sales-form"
+            onSubmit={handleSubmit}
           >
-            {saving
-              ? "Processing..."
-              : "Complete Sale"}
-          </button>
-        </form>
-      </section>
+            <div className="form-group">
+              <label>
+                Product
+              </label>
+
+              <select
+                name="product_id"
+                value={formData.product_id}
+                onChange={handleChange}
+                required
+              >
+                <option value="">
+                  Select product
+                </option>
+
+                {products.map(
+                  (product) => (
+                    <option
+                      key={product.id}
+                      value={product.id}
+                      disabled={
+                        product.quantity <= 0
+                      }
+                    >
+                      {product.name} -
+                      {" "}
+                      KES{" "}
+                      {
+                        product.selling_price
+                      }
+                      {" "}
+                      (
+                      {product.quantity}
+                      {" "}
+                      in stock)
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>
+                Customer
+              </label>
+
+              <select
+                name="customer_id"
+                value={formData.customer_id}
+                onChange={handleChange}
+              >
+                <option value="">
+                  Walk-in Customer
+                </option>
+
+                {customers.map(
+                  (customer) => (
+                    <option
+                      key={customer.id}
+                      value={customer.id}
+                    >
+                      {customer.name}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>
+                Quantity
+              </label>
+
+              <input
+                type="number"
+                name="quantity"
+                value={formData.quantity}
+                onChange={handleChange}
+                min="1"
+                max={
+                  selectedProduct
+                    ? selectedProduct.quantity
+                    : undefined
+                }
+                required
+              />
+            </div>
+
+            <div className="form-total">
+              <strong>
+                Total: KES{" "}
+                {totalAmount.toFixed(2)}
+              </strong>
+            </div>
+
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={
+                saving ||
+                !formData.product_id
+              }
+            >
+              {saving
+                ? "Processing..."
+                : "Complete Sale"}
+            </button>
+          </form>
+        </section>
+      )}
 
       <section className="sales-section">
         <h2>Sales History</h2>
