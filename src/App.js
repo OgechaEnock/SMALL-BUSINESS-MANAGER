@@ -30,6 +30,16 @@ function DashboardLayout() {
         <main className="app-main">
           <Routes>
             <Route
+              path="/login"
+              element={<Login />}
+            />
+
+            <Route
+               path="/register"
+               element={<Register />}
+            />
+            
+            <Route
               path="/dashboard"
               element={<Dashboard />}
             />
