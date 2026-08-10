@@ -1,34 +1,79 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import "./Sidebar.css";
 
 function Sidebar() {
   return (
-    <aside>
-      <h2>Small Business Manager</h2>
+    <aside className="sidebar">
+      <div className="sidebar-brand">
+        <h2>Small Business Manager</h2>
+      </div>
 
-      <nav>
-        <Link to="/dashboard">
+      <nav className="sidebar-nav">
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) =>
+            isActive
+              ? "sidebar-link active"
+              : "sidebar-link"
+          }
+        >
           Dashboard
-        </Link>
+        </NavLink>
 
-        <Link to="/sales">
+        <NavLink
+          to="/sales"
+          className={({ isActive }) =>
+            isActive
+              ? "sidebar-link active"
+              : "sidebar-link"
+          }
+        >
           Sales
-        </Link>
+        </NavLink>
 
-        <Link to="/expenses">
+        <NavLink
+          to="/expenses"
+          className={({ isActive }) =>
+            isActive
+              ? "sidebar-link active"
+              : "sidebar-link"
+          }
+        >
           Expenses
-        </Link>
+        </NavLink>
 
-        <Link to="/inventory">
+        <NavLink
+          to="/inventory"
+          className={({ isActive }) =>
+            isActive
+              ? "sidebar-link active"
+              : "sidebar-link"
+          }
+        >
           Inventory
-        </Link>
+        </NavLink>
 
-        <Link to="/customers">
+        <NavLink
+          to="/customers"
+          className={({ isActive }) =>
+            isActive
+              ? "sidebar-link active"
+              : "sidebar-link"
+          }
+        >
           Customers
-        </Link>
+        </NavLink>
 
-        <Link to="/reports">
+        <NavLink
+          to="/reports"
+          className={({ isActive }) =>
+            isActive
+              ? "sidebar-link active"
+              : "sidebar-link"
+          }
+        >
           Reports
-        </Link>
+        </NavLink>
       </nav>
     </aside>
   );
