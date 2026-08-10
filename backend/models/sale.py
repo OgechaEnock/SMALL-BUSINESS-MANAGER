@@ -29,6 +29,12 @@ class Sale(db.Model):
         nullable=False
     )
 
+    customer_id = db.Column(
+        db.Integer,
+        db.ForeignKey("customers.id"),
+        nullable=True
+    )
+
     quantity = db.Column(
         db.Integer,
         nullable=False
@@ -57,6 +63,11 @@ class Sale(db.Model):
 
     user = db.relationship(
         "User",
+        backref="sales"
+    )
+
+    customer = db.relationship(
+        "Customer",
         backref="sales"
     )
 

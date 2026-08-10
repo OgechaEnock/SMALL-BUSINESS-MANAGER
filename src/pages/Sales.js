@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 
 function Sales() {
-  const [products, setProducts] = useState([]);
   const [sales, setSales] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [customers, setCustomers] = useState([]);
 
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const [formData, setFormData] = useState({
     product_id: "",
+    customer_id: "",
     quantity: 1,
   });
 
@@ -21,19 +23,19 @@ function Sales() {
       setLoading(true);
       setError("");
 
-      const [productsResponse, salesResponse] =
-        await Promise.all([
-          api.get("/products/"),
-          api.get("/sales/"),
-        ]);
+      const [
+        salesResponse,
+        productsResponse,
+        customersResponse,
+      ] = await Promise.all([
+        api.get("/sales/"),
+        api.get("/products/"),
+        api.get("/customers/"),
+      ]);
 
-      setProducts(
-        productsResponse.data.products
-      );
-
-      setSales(
-        salesResponse.data.sales
-      );
+      setSales(salesResponse.data.sales);
+      setProducts(productsResponse.data.products);
+      setCustomers(customersResponse.data.customers);
     } catch (error) {
       console.error(error);
 
@@ -62,102 +64,79 @@ function Sales() {
     setSuccess("");
   };
 
-  const selectedProduct = products.find(
-    (product) =>
-      product.id ===
-      Number(formData.product_id)
-  );
-
-  const quantity = Number(
-    formData.quantity
-  );
-
-  const total = selectedProduct
-    ? Number(selectedProduct.selling_price) *
-      quantity
-    : 0;
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     setError("");
     setSuccess("");
-
-    if (!formData.product_id) {
-      setError("Please select a product");
-      return;
-    }
-
-    if (quantity <= 0) {
-      setError(
-        "Quantity must be greater than zero"
-      );
-      return;
-    }
-
-    if (
-      selectedProduct &&
-      quantity > selectedProduct.quantity
-    ) {
-      setError(
-        `Only ${selectedProduct.quantity} units are available`
-      );
-      return;
-    }
+    setSaving(true);
 
     try {
-      setSubmitting(true);
-
       const response = await api.post(
         "/sales/",
         {
           product_id: Number(
             formData.product_id
           ),
-          quantity,
+          customer_id:
+            formData.customer_id
+              ? Number(
+                  formData.customer_id
+                )
+              : null,
+          quantity: Number(
+            formData.quantity
+          ),
         }
       );
 
-      const newSale =
-        response.data.sale;
-
       setSales((previous) => [
-        newSale,
+        response.data.sale,
         ...previous,
       ]);
 
-      setProducts((previous) =>
-        previous.map((product) =>
-          product.id ===
-          newSale.product_id
-            ? {
-                ...product,
-                quantity:
-                  newSale.remaining_stock,
-              }
-            : product
-        )
-      );
-
       setFormData({
         product_id: "",
+        customer_id: "",
         quantity: 1,
       });
 
       setSuccess(
-        "Sale recorded successfully"
+        "Sale created successfully"
+      );
+
+      // Refresh products so stock
+      // reflects the sale.
+      const productsResponse =
+        await api.get("/products/");
+
+      setProducts(
+        productsResponse.data.products
       );
     } catch (error) {
       console.error(error);
 
       setError(
         error.response?.data?.error ||
-          "Failed to record sale"
+          "Failed to create sale"
       );
     } finally {
-      setSubmitting(false);
+      setSaving(false);
     }
   };
+
+  const selectedProduct = products.find(
+    (product) =>
+      product.id ===
+      Number(formData.product_id)
+  );
+
+  const totalAmount = selectedProduct
+    ? Number(
+        selectedProduct.selling_price
+      ) *
+      Number(formData.quantity || 0)
+    : 0;
 
   if (loading) {
     return <p>Loading sales...</p>;
@@ -191,7 +170,7 @@ function Sales() {
               required
             >
               <option value="">
-                Select a product
+                Select product
               </option>
 
               {products.map(
@@ -200,37 +179,52 @@ function Sales() {
                     key={product.id}
                     value={product.id}
                     disabled={
-                      product.quantity === 0
+                      product.quantity <= 0
                     }
                   >
-                    {product.name} - KES{" "}
+                    {product.name} -
+                    {" "}
+                    KES{" "}
                     {
                       product.selling_price
-                    }{" "}
+                    }
+                    {" "}
                     (
                     {product.quantity}
-                    available)
+                    {" "}
+                    in stock)
                   </option>
                 )
               )}
             </select>
           </div>
 
-          {selectedProduct && (
-            <div>
-              <p>
-                Available stock:{" "}
-                {selectedProduct.quantity}
-              </p>
+          <div>
+            <label>
+              Customer
+            </label>
 
-              <p>
-                Selling price: KES{" "}
-                {
-                  selectedProduct.selling_price
-                }
-              </p>
-            </div>
-          )}
+            <select
+              name="customer_id"
+              value={formData.customer_id}
+              onChange={handleChange}
+            >
+              <option value="">
+                Walk-in Customer
+              </option>
+
+              {customers.map(
+                (customer) => (
+                  <option
+                    key={customer.id}
+                    value={customer.id}
+                  >
+                    {customer.name}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
 
           <div>
             <label>
@@ -252,18 +246,23 @@ function Sales() {
             />
           </div>
 
-          <h3>
-            Total: KES{" "}
-            {total.toFixed(2)}
-          </h3>
+          <div>
+            <strong>
+              Total: KES{" "}
+              {totalAmount.toFixed(2)}
+            </strong>
+          </div>
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={
+              saving ||
+              !formData.product_id
+            }
           >
-            {submitting
-              ? "Recording..."
-              : "Record Sale"}
+            {saving
+              ? "Processing..."
+              : "Complete Sale"}
           </button>
         </form>
       </section>
@@ -281,11 +280,12 @@ function Sales() {
           <table>
             <thead>
               <tr>
+                <th>Date</th>
                 <th>Product</th>
+                <th>Customer</th>
                 <th>Quantity</th>
                 <th>Unit Price</th>
                 <th>Total</th>
-                <th>Date</th>
               </tr>
             </thead>
 
@@ -293,7 +293,18 @@ function Sales() {
               {sales.map((sale) => (
                 <tr key={sale.id}>
                   <td>
+                    {new Date(
+                      sale.created_at
+                    ).toLocaleString()}
+                  </td>
+
+                  <td>
                     {sale.product_name}
+                  </td>
+
+                  <td>
+                    {sale.customer_name ||
+                      "Walk-in Customer"}
                   </td>
 
                   <td>
@@ -312,12 +323,6 @@ function Sales() {
                     {Number(
                       sale.total_amount
                     ).toFixed(2)}
-                  </td>
-
-                  <td>
-                    {new Date(
-                      sale.created_at
-                    ).toLocaleString()}
                   </td>
                 </tr>
               ))}
