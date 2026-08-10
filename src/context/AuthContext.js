@@ -29,6 +29,11 @@ export function AuthProvider({ children }) {
         access_token
       );
 
+      localStorage.setItem(
+        "user",
+        JSON.stringify(user)
+      );
+
       setUser(user);
 
       return {
@@ -47,8 +52,48 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const register = async (formData) => {
+    setLoading(true);
+
+    try {
+      const response = await api.post(
+        "/auth/register",
+        formData
+      );
+
+      const { access_token, user } = response.data;
+
+      localStorage.setItem(
+        "access_token",
+        access_token
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(user)
+      );
+
+      setUser(user);
+
+      return {
+        success: true,
+        user,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error.response?.data?.error ||
+          "Registration failed",
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
     setUser(null);
   };
 
@@ -69,6 +114,7 @@ export function AuthProvider({ children }) {
         setUser(response.data.user);
       } catch (error) {
         localStorage.removeItem("access_token");
+        localStorage.removeItem("user");
         setUser(null);
       } finally {
         setLoading(false);
@@ -82,6 +128,7 @@ export function AuthProvider({ children }) {
     user,
     loading,
     login,
+    register,
     logout,
   };
 

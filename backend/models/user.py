@@ -27,6 +27,7 @@ class User(db.Model):
     email = db.Column(
         db.String(255),
         nullable=False,
+        unique=True,
         index=True
     )
 

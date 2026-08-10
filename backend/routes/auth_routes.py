@@ -1,3 +1,5 @@
+import re
+
 from flask import Blueprint, request
 from flask_jwt_extended import (
     create_access_token,
@@ -8,6 +10,11 @@ from flask_jwt_extended import (
 from db import db
 from models.business import Business
 from models.user import User
+
+
+EMAIL_REGEX = re.compile(
+    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+)
 
 
 auth_bp = Blueprint(
@@ -44,6 +51,16 @@ def register():
     if not password:
         return {
             "error": "Password is required"
+        }, 400
+
+    if len(password) < 8:
+        return {
+            "error": "Password must be at least 8 characters long"
+        }, 400
+
+    if not EMAIL_REGEX.match(email):
+        return {
+            "error": "Invalid email format"
         }, 400
 
     if not business_name:
@@ -121,6 +138,11 @@ def login():
     if not password:
         return {
             "error": "Password is required"
+        }, 400
+
+    if not EMAIL_REGEX.match(email):
+        return {
+            "error": "Invalid email format"
         }, 400
 
     user = User.query.filter_by(
