@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import "./Expenses.css";
 
 function Expenses() {
   const [expenses, setExpenses] = useState([]);
@@ -64,6 +65,8 @@ function Expenses() {
       ...previous,
       [name]: value
     }));
+
+    setError("");
   };
 
   const resetForm = () => {
@@ -109,6 +112,8 @@ function Expenses() {
               : expense
           )
         );
+
+        setError("");
       } else {
         const response = await api.post(
           "/expenses/",
@@ -119,10 +124,11 @@ function Expenses() {
           response.data.expense,
           ...previous
         ]);
+
+        setError("");
       }
 
       resetForm();
-
     } catch (error) {
       console.error(error);
 
@@ -146,6 +152,7 @@ function Expenses() {
       notes: expense.notes || ""
     });
 
+    setError("");
     setShowForm(true);
   };
 
@@ -170,7 +177,6 @@ function Expenses() {
           (item) => item.id !== expense.id
         )
       );
-
     } catch (error) {
       console.error(error);
 
@@ -188,24 +194,32 @@ function Expenses() {
   );
 
   if (loading) {
-    return <p>Loading expenses...</p>;
+    return (
+      <div className="expenses-loading">
+        Loading expenses...
+      </div>
+    );
   }
 
   return (
-    <div>
+    <div className="expenses-page">
 
-      <div>
-        <h1>Expenses</h1>
-
-        <p>
-          Total expenses:{" "}
-          <strong>
-            KES {totalExpenses.toFixed(2)}
-          </strong>
-        </p>
+      <div className="expenses-header">
+        <div>
+          <h1>Expenses</h1>
+          <p>
+            Track and manage your business
+            expenses
+          </p>
+        </div>
 
         <button
           type="button"
+          className={
+            showForm
+              ? "btn-secondary"
+              : "btn-primary"
+          }
           onClick={() => {
             if (showForm) {
               resetForm();
@@ -220,135 +234,148 @@ function Expenses() {
         </button>
       </div>
 
+      <div className="expenses-summary">
+        <span className="summary-label">
+          Total Expenses
+        </span>
+
+        <span className="summary-amount">
+          KES {totalExpenses.toFixed(2)}
+        </span>
+      </div>
+
       {error && (
-        <p>
+        <div className="alert-error">
           {error}
-        </p>
+        </div>
       )}
 
       {showForm && (
-        <form onSubmit={handleSubmit}>
-
+        <section className="expenses-section">
           <h2>
             {editingExpense
               ? "Edit Expense"
               : "Add Expense"}
           </h2>
 
-          <div>
-            <label htmlFor="description">
-              Description
-            </label>
-
-            <input
-              id="description"
-              type="text"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="e.g. Monthly internet"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="category">
-              Category
-            </label>
-
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-            >
-              {categories.map((category) => (
-                <option
-                  key={category}
-                  value={category}
-                >
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="amount">
-              Amount
-            </label>
-
-            <input
-              id="amount"
-              type="number"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              min="0.01"
-              step="0.01"
-              placeholder="0.00"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="expense_date">
-              Expense Date
-            </label>
-
-            <input
-              id="expense_date"
-              type="date"
-              name="expense_date"
-              value={formData.expense_date}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="notes">
-              Notes
-            </label>
-
-            <textarea
-              id="notes"
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              placeholder="Optional notes"
-              rows="3"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={saving}
+          <form
+            className="expenses-form"
+            onSubmit={handleSubmit}
           >
-            {saving
-              ? "Saving..."
-              : editingExpense
-                ? "Update Expense"
-                : "Save Expense"}
-          </button>
+            <div className="form-group">
+              <label htmlFor="description">
+                Description
+              </label>
 
-          {editingExpense && (
+              <input
+                id="description"
+                type="text"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="e.g. Monthly internet"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="category">
+                Category
+              </label>
+
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+              >
+                {categories.map((category) => (
+                  <option
+                    key={category}
+                    value={category}
+                  >
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="amount">
+                Amount
+              </label>
+
+              <input
+                id="amount"
+                type="number"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                min="0.01"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="expense_date">
+                Expense Date
+              </label>
+
+              <input
+                id="expense_date"
+                type="date"
+                name="expense_date"
+                value={formData.expense_date}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="notes">
+                Notes
+              </label>
+
+              <textarea
+                id="notes"
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+                placeholder="Optional notes"
+                rows="3"
+              />
+            </div>
+
             <button
-              type="button"
-              onClick={resetForm}
+              type="submit"
+              className="btn-primary"
               disabled={saving}
             >
-              Cancel Edit
+              {saving
+                ? "Saving..."
+                : editingExpense
+                  ? "Update Expense"
+                  : "Save Expense"}
             </button>
-          )}
 
-        </form>
+            {editingExpense && (
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={resetForm}
+                disabled={saving}
+              >
+                Cancel Edit
+              </button>
+            )}
+          </form>
+        </section>
       )}
 
-      <hr />
-
-      <div>
+      <section className="expenses-section">
         <h2>Expense History</h2>
 
         {expenses.length === 0 ? (
@@ -356,79 +383,81 @@ function Expenses() {
             No expenses recorded yet.
           </p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Amount</th>
-                <th>Notes</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {expenses.map((expense) => (
-                <tr key={expense.id}>
-
-                  <td>
-                    {expense.expense_date}
-                  </td>
-
-                  <td>
-                    {expense.description}
-                  </td>
-
-                  <td>
-                    {expense.category}
-                  </td>
-
-                  <td>
-                    KES{" "}
-                    {Number(
-                      expense.amount
-                    ).toFixed(2)}
-                  </td>
-
-                  <td>
-                    {expense.notes || "-"}
-                  </td>
-
-                  <td>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleEdit(expense)
-                      }
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDelete(expense)
-                      }
-                    >
-                      Delete
-                    </button>
-                  </td>
-
+          <div className="expenses-table-wrapper">
+            <table className="expenses-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {expenses.map((expense) => (
+                  <tr key={expense.id}>
+                    <td>
+                      {expense.expense_date}
+                    </td>
+
+                    <td>
+                      {expense.description}
+                    </td>
+
+                    <td>
+                      {expense.category}
+                    </td>
+
+                    <td>
+                      KES{" "}
+                      {Number(
+                        expense.amount
+                      ).toFixed(2)}
+                    </td>
+
+                    <td>
+                      {expense.notes || "-"}
+                    </td>
+
+                    <td>
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={() =>
+                          handleEdit(expense)
+                        }
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn-danger"
+                        onClick={() =>
+                          handleDelete(expense)
+                        }
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-      </div>
 
-      <button
-        type="button"
-        onClick={fetchExpenses}
-      >
-        Refresh Expenses
-      </button>
-
+        <button
+          type="button"
+          className="btn-secondary refresh-btn"
+          onClick={fetchExpenses}
+        >
+          Refresh Expenses
+        </button>
+      </section>
     </div>
   );
 }
