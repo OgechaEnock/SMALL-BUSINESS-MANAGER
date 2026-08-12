@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AuthAdvert from "../components/AuthAdvert";
 import "./Auth.css";
 
 function Login() {
@@ -46,6 +47,8 @@ function Login() {
 
   return (
     <div className="auth-page">
+
+      <AuthAdvert />
 
       <div className="auth-card">
 
