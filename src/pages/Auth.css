@@ -1,9 +1,50 @@
 .auth-page {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 30px;
+}
+
+.auth-advert {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #eef2ff, #f9fafb);
+  text-align: center;
+}
+
+.auth-advert h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.auth-advert p {
+  margin: 0 0 14px;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.auth-advert-features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.auth-advert-chip {
+  padding: 5px 12px;
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  background: white;
+  color: #4f46e5;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .auth-card {
