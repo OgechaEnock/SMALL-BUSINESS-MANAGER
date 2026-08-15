@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Plus, X, Inbox } from "lucide-react";
 import api from "../services/api";
 import "./Sales.css";
 
@@ -26,26 +27,19 @@ function Sales() {
       setLoading(true);
       setError("");
 
-      const [
-        salesResponse,
-        productsResponse,
-        customersResponse,
-      ] = await Promise.all([
-        api.get("/sales/"),
-        api.get("/products/"),
-        api.get("/customers/"),
-      ]);
+      const [salesResponse, productsResponse, customersResponse] =
+        await Promise.all([
+          api.get("/sales/"),
+          api.get("/products/"),
+          api.get("/customers/"),
+        ]);
 
       setSales(salesResponse.data.sales);
       setProducts(productsResponse.data.products);
       setCustomers(customersResponse.data.customers);
     } catch (error) {
       console.error(error);
-
-      setError(
-        error.response?.data?.error ||
-          "Failed to load sales data"
-      );
+      setError(error.response?.data?.error || "Failed to load sales data");
     } finally {
       setLoading(false);
     }
@@ -57,121 +51,76 @@ function Sales() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
-
+    setFormData((previous) => ({ ...previous, [name]: value }));
     setError("");
     setSuccess("");
   };
 
   const resetForm = () => {
-    setFormData({
-      product_id: "",
-      customer_id: "",
-      quantity: 1,
-    });
-
+    setFormData({ product_id: "", customer_id: "", quantity: 1 });
     setShowForm(false);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     setError("");
     setSuccess("");
     setSaving(true);
 
     try {
-      const response = await api.post(
-        "/sales/",
-        {
-          product_id: Number(
-            formData.product_id
-          ),
-          customer_id:
-            formData.customer_id
-              ? Number(
-                  formData.customer_id
-                )
-              : null,
-          quantity: Number(
-            formData.quantity
-          ),
-        }
-      );
+      const response = await api.post("/sales/", {
+        product_id: Number(formData.product_id),
+        customer_id: formData.customer_id ? Number(formData.customer_id) : null,
+        quantity: Number(formData.quantity),
+      });
 
-      setSales((previous) => [
-        response.data.sale,
-        ...previous,
-      ]);
-
+      setSales((previous) => [response.data.sale, ...previous]);
       resetForm();
+      setSuccess("Sale created successfully");
 
-      setSuccess(
-        "Sale created successfully"
-      );
-
-      // Refresh products so stock
-      // reflects the sale.
-      const productsResponse =
-        await api.get("/products/");
-
-      setProducts(
-        productsResponse.data.products
-      );
+      const productsResponse = await api.get("/products/");
+      setProducts(productsResponse.data.products);
     } catch (error) {
       console.error(error);
-
-      setError(
-        error.response?.data?.error ||
-          "Failed to create sale"
-      );
+      setError(error.response?.data?.error || "Failed to create sale");
     } finally {
       setSaving(false);
     }
   };
 
   const selectedProduct = products.find(
-    (product) =>
-      product.id ===
-      Number(formData.product_id)
+    (product) => product.id === Number(formData.product_id)
   );
 
   const totalAmount = selectedProduct
-    ? Number(
-        selectedProduct.selling_price
-      ) *
-      Number(formData.quantity || 0)
+    ? Number(selectedProduct.selling_price) * Number(formData.quantity || 0)
     : 0;
 
   if (loading) {
     return (
-      <div className="sales-loading">
-        Loading sales...
+      <div className="sales-page">
+        <div className="page-header">
+          <div>
+            <h1>Sales</h1>
+            <p>Loading your sales...</p>
+          </div>
+        </div>
+        <div className="skeleton" style={{ height: 200 }} />
       </div>
     );
   }
 
   return (
     <div className="sales-page">
-      <div className="sales-header">
+      <div className="page-header">
         <div>
           <h1>Sales</h1>
-          <p>
-            Record and track your sales
-          </p>
+          <p>Record and track your sales</p>
         </div>
 
         <button
           type="button"
-          className={
-            showForm
-              ? "btn-secondary"
-              : "btn-primary"
-          }
+          className={showForm ? "btn btn-secondary" : "btn btn-primary"}
           onClick={() => {
             if (showForm) {
               resetForm();
@@ -180,138 +129,79 @@ function Sales() {
             }
           }}
         >
-          {showForm
-            ? "Cancel"
-            : "Record Sale"}
+          {showForm ? <X size={16} /> : <Plus size={16} />}
+          {showForm ? "Cancel" : "Record Sale"}
         </button>
       </div>
 
-      {error && (
-        <div className="alert-error">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="alert-success">
-          {success}
-        </div>
-      )}
+      {error && <div className="alert alert-error">{error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
 
       {showForm && (
         <section className="sales-section">
           <h2>Record Sale</h2>
 
-          <form
-            className="sales-form"
-            onSubmit={handleSubmit}
-          >
+          <form className="sales-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>
-                Product
-              </label>
-
+              <label>Product</label>
               <select
                 name="product_id"
                 value={formData.product_id}
                 onChange={handleChange}
                 required
               >
-                <option value="">
-                  Select product
-                </option>
-
-                {products.map(
-                  (product) => (
-                    <option
-                      key={product.id}
-                      value={product.id}
-                      disabled={
-                        product.quantity <= 0
-                      }
-                    >
-                      {product.name} -
-                      {" "}
-                      KES{" "}
-                      {
-                        product.selling_price
-                      }
-                      {" "}
-                      (
-                      {product.quantity}
-                      {" "}
-                      in stock)
-                    </option>
-                  )
-                )}
+                <option value="">Select product</option>
+                {products.map((product) => (
+                  <option
+                    key={product.id}
+                    value={product.id}
+                    disabled={product.quantity <= 0}
+                  >
+                    {product.name} - KES {product.selling_price} ({product.quantity} in stock)
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className="form-group">
-              <label>
-                Customer
-              </label>
-
+              <label>Customer</label>
               <select
                 name="customer_id"
                 value={formData.customer_id}
                 onChange={handleChange}
               >
-                <option value="">
-                  Walk-in Customer
-                </option>
-
-                {customers.map(
-                  (customer) => (
-                    <option
-                      key={customer.id}
-                      value={customer.id}
-                    >
-                      {customer.name}
-                    </option>
-                  )
-                )}
+                <option value="">Walk-in Customer</option>
+                {customers.map((customer) => (
+                  <option key={customer.id} value={customer.id}>
+                    {customer.name}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className="form-group">
-              <label>
-                Quantity
-              </label>
-
+              <label>Quantity</label>
               <input
                 type="number"
                 name="quantity"
                 value={formData.quantity}
                 onChange={handleChange}
                 min="1"
-                max={
-                  selectedProduct
-                    ? selectedProduct.quantity
-                    : undefined
-                }
+                max={selectedProduct ? selectedProduct.quantity : undefined}
                 required
               />
             </div>
 
             <div className="form-total">
-              <strong>
-                Total: KES{" "}
-                {totalAmount.toFixed(2)}
-              </strong>
+              <strong>Total: KES {totalAmount.toFixed(2)}</strong>
             </div>
 
             <button
               type="submit"
-              className="btn-primary"
-              disabled={
-                saving ||
-                !formData.product_id
-              }
+              className="btn btn-primary"
+              disabled={saving || !formData.product_id}
             >
-              {saving
-                ? "Processing..."
-                : "Complete Sale"}
+              {saving ? "Processing..." : "Complete Sale"}
             </button>
           </form>
         </section>
@@ -321,12 +211,16 @@ function Sales() {
         <h2>Sales History</h2>
 
         {sales.length === 0 ? (
-          <p>
-            No sales recorded yet.
-          </p>
+          <div className="empty-state">
+            <div className="empty-icon">
+              <Inbox size={24} />
+            </div>
+            <h3>No sales yet</h3>
+            <p>Record your first sale to see it here.</p>
+          </div>
         ) : (
-          <div className="sales-table-wrapper">
-            <table className="sales-table">
+          <div className="table-wrapper">
+            <table className="table">
               <thead>
                 <tr>
                   <th>Date</th>
@@ -337,42 +231,15 @@ function Sales() {
                   <th>Total</th>
                 </tr>
               </thead>
-
               <tbody>
                 {sales.map((sale) => (
                   <tr key={sale.id}>
-                    <td>
-                      {new Date(
-                        sale.created_at
-                      ).toLocaleString()}
-                    </td>
-
-                    <td>
-                      {sale.product_name}
-                    </td>
-
-                    <td>
-                      {sale.customer_name ||
-                        "Walk-in Customer"}
-                    </td>
-
-                    <td>
-                      {sale.quantity}
-                    </td>
-
-                    <td>
-                      KES{" "}
-                      {Number(
-                        sale.unit_price
-                      ).toFixed(2)}
-                    </td>
-
-                    <td>
-                      KES{" "}
-                      {Number(
-                        sale.total_amount
-                      ).toFixed(2)}
-                    </td>
+                    <td>{new Date(sale.created_at).toLocaleString()}</td>
+                    <td>{sale.product_name}</td>
+                    <td>{sale.customer_name || "Walk-in Customer"}</td>
+                    <td>{sale.quantity}</td>
+                    <td>KES {Number(sale.unit_price).toFixed(2)}</td>
+                    <td>KES {Number(sale.total_amount).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
