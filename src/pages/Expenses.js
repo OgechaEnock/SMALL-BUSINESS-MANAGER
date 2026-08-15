@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Plus, X, Receipt, Pencil, Trash2, RefreshCw, Wallet } from "lucide-react";
 import api from "../services/api";
 import "./Expenses.css";
 
@@ -15,10 +16,8 @@ function Expenses() {
     description: "",
     category: "Other",
     amount: "",
-    expense_date: new Date()
-      .toISOString()
-      .split("T")[0],
-    notes: ""
+    expense_date: new Date().toISOString().split("T")[0],
+    notes: "",
   });
 
   const categories = [
@@ -31,7 +30,7 @@ function Expenses() {
     "Internet",
     "Maintenance",
     "Taxes",
-    "Other"
+    "Other",
   ];
 
   const fetchExpenses = async () => {
@@ -44,11 +43,7 @@ function Expenses() {
       setExpenses(response.data.expenses || []);
     } catch (error) {
       console.error(error);
-
-      setError(
-        error.response?.data?.error ||
-          "Failed to load expenses"
-      );
+      setError(error.response?.data?.error || "Failed to load expenses");
     } finally {
       setLoading(false);
     }
@@ -60,12 +55,7 @@ function Expenses() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value
-    }));
-
+    setFormData((previous) => ({ ...previous, [name]: value }));
     setError("");
   };
 
@@ -74,10 +64,8 @@ function Expenses() {
       description: "",
       category: "Other",
       amount: "",
-      expense_date: new Date()
-        .toISOString()
-        .split("T")[0],
-      notes: ""
+      expense_date: new Date().toISOString().split("T")[0],
+      notes: "",
     });
 
     setEditingExpense(null);
@@ -86,7 +74,6 @@ function Expenses() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     setSaving(true);
     setError("");
 
@@ -96,34 +83,23 @@ function Expenses() {
         category: formData.category,
         amount: Number(formData.amount),
         expense_date: formData.expense_date,
-        notes: formData.notes
+        notes: formData.notes,
       };
 
       if (editingExpense) {
-        const response = await api.put(
-          `/expenses/${editingExpense.id}`,
-          payload
-        );
+        const response = await api.put(`/expenses/${editingExpense.id}`, payload);
 
         setExpenses((previous) =>
           previous.map((expense) =>
-            expense.id === editingExpense.id
-              ? response.data.expense
-              : expense
+            expense.id === editingExpense.id ? response.data.expense : expense
           )
         );
 
         setError("");
       } else {
-        const response = await api.post(
-          "/expenses/",
-          payload
-        );
+        const response = await api.post("/expenses/", payload);
 
-        setExpenses((previous) => [
-          response.data.expense,
-          ...previous
-        ]);
+        setExpenses((previous) => [response.data.expense, ...previous]);
 
         setError("");
       }
@@ -131,11 +107,7 @@ function Expenses() {
       resetForm();
     } catch (error) {
       console.error(error);
-
-      setError(
-        error.response?.data?.error ||
-          "Failed to save expense"
-      );
+      setError(error.response?.data?.error || "Failed to save expense");
     } finally {
       setSaving(false);
     }
@@ -149,7 +121,7 @@ function Expenses() {
       category: expense.category,
       amount: expense.amount,
       expense_date: expense.expense_date,
-      notes: expense.notes || ""
+      notes: expense.notes || "",
     });
 
     setError("");
@@ -157,9 +129,7 @@ function Expenses() {
   };
 
   const handleDelete = async (expense) => {
-    const confirmed = window.confirm(
-      `Delete expense "${expense.description}"?`
-    );
+    const confirmed = window.confirm(`Delete expense "${expense.description}"?`);
 
     if (!confirmed) {
       return;
@@ -168,58 +138,47 @@ function Expenses() {
     try {
       setError("");
 
-      await api.delete(
-        `/expenses/${expense.id}`
-      );
+      await api.delete(`/expenses/${expense.id}`);
 
       setExpenses((previous) =>
-        previous.filter(
-          (item) => item.id !== expense.id
-        )
+        previous.filter((item) => item.id !== expense.id)
       );
     } catch (error) {
       console.error(error);
-
-      setError(
-        error.response?.data?.error ||
-          "Failed to delete expense"
-      );
+      setError(error.response?.data?.error || "Failed to delete expense");
     }
   };
 
   const totalExpenses = expenses.reduce(
-    (total, expense) =>
-      total + Number(expense.amount),
+    (total, expense) => total + Number(expense.amount),
     0
   );
 
   if (loading) {
     return (
-      <div className="expenses-loading">
-        Loading expenses...
+      <div className="expenses-page">
+        <div className="page-header">
+          <div>
+            <h1>Expenses</h1>
+            <p>Loading your expenses...</p>
+          </div>
+        </div>
+        <div className="skeleton" style={{ height: 200 }} />
       </div>
     );
   }
 
   return (
     <div className="expenses-page">
-
-      <div className="expenses-header">
+      <div className="page-header">
         <div>
           <h1>Expenses</h1>
-          <p>
-            Track and manage your business
-            expenses
-          </p>
+          <p>Track and manage your business expenses</p>
         </div>
 
         <button
           type="button"
-          className={
-            showForm
-              ? "btn-secondary"
-              : "btn-primary"
-          }
+          className={showForm ? "btn btn-secondary" : "btn btn-primary"}
           onClick={() => {
             if (showForm) {
               resetForm();
@@ -228,45 +187,30 @@ function Expenses() {
             }
           }}
         >
-          {showForm
-            ? "Cancel"
-            : "Add Expense"}
+          {showForm ? <X size={16} /> : <Plus size={16} />}
+          {showForm ? "Cancel" : "Add Expense"}
         </button>
       </div>
 
       <div className="expenses-summary">
-        <span className="summary-label">
-          Total Expenses
-        </span>
-
-        <span className="summary-amount">
-          KES {totalExpenses.toFixed(2)}
-        </span>
+        <div className="summary-icon">
+          <Wallet size={20} />
+        </div>
+        <div>
+          <span className="summary-label">Total Expenses</span>
+          <span className="summary-amount">KES {totalExpenses.toFixed(2)}</span>
+        </div>
       </div>
 
-      {error && (
-        <div className="alert-error">
-          {error}
-        </div>
-      )}
+      {error && <div className="alert alert-error">{error}</div>}
 
       {showForm && (
         <section className="expenses-section">
-          <h2>
-            {editingExpense
-              ? "Edit Expense"
-              : "Add Expense"}
-          </h2>
+          <h2>{editingExpense ? "Edit Expense" : "Add Expense"}</h2>
 
-          <form
-            className="expenses-form"
-            onSubmit={handleSubmit}
-          >
+          <form className="expenses-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="description">
-                Description
-              </label>
-
+              <label htmlFor="description">Description</label>
               <input
                 id="description"
                 type="text"
@@ -279,10 +223,7 @@ function Expenses() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="category">
-                Category
-              </label>
-
+              <label htmlFor="category">Category</label>
               <select
                 id="category"
                 name="category"
@@ -291,10 +232,7 @@ function Expenses() {
                 required
               >
                 {categories.map((category) => (
-                  <option
-                    key={category}
-                    value={category}
-                  >
+                  <option key={category} value={category}>
                     {category}
                   </option>
                 ))}
@@ -302,10 +240,7 @@ function Expenses() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="amount">
-                Amount
-              </label>
-
+              <label htmlFor="amount">Amount</label>
               <input
                 id="amount"
                 type="number"
@@ -320,10 +255,7 @@ function Expenses() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="expense_date">
-                Expense Date
-              </label>
-
+              <label htmlFor="expense_date">Expense Date</label>
               <input
                 id="expense_date"
                 type="date"
@@ -335,10 +267,7 @@ function Expenses() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="notes">
-                Notes
-              </label>
-
+              <label htmlFor="notes">Notes</label>
               <textarea
                 id="notes"
                 name="notes"
@@ -349,22 +278,14 @@ function Expenses() {
               />
             </div>
 
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={saving}
-            >
-              {saving
-                ? "Saving..."
-                : editingExpense
-                  ? "Update Expense"
-                  : "Save Expense"}
+            <button type="submit" className="btn btn-primary" disabled={saving}>
+              {saving ? "Saving..." : editingExpense ? "Update Expense" : "Save Expense"}
             </button>
 
             {editingExpense && (
               <button
                 type="button"
-                className="btn-secondary"
+                className="btn btn-secondary"
                 onClick={resetForm}
                 disabled={saving}
               >
@@ -379,12 +300,16 @@ function Expenses() {
         <h2>Expense History</h2>
 
         {expenses.length === 0 ? (
-          <p>
-            No expenses recorded yet.
-          </p>
+          <div className="empty-state">
+            <div className="empty-icon">
+              <Receipt size={24} />
+            </div>
+            <h3>No expenses yet</h3>
+            <p>Record your first expense to see it here.</p>
+          </div>
         ) : (
-          <div className="expenses-table-wrapper">
-            <table className="expenses-table">
+          <div className="table-wrapper">
+            <table className="table">
               <thead>
                 <tr>
                   <th>Date</th>
@@ -395,51 +320,29 @@ function Expenses() {
                   <th>Actions</th>
                 </tr>
               </thead>
-
               <tbody>
                 {expenses.map((expense) => (
                   <tr key={expense.id}>
-                    <td>
-                      {expense.expense_date}
-                    </td>
-
-                    <td>
-                      {expense.description}
-                    </td>
-
-                    <td>
-                      {expense.category}
-                    </td>
-
-                    <td>
-                      KES{" "}
-                      {Number(
-                        expense.amount
-                      ).toFixed(2)}
-                    </td>
-
-                    <td>
-                      {expense.notes || "-"}
-                    </td>
-
+                    <td>{expense.expense_date}</td>
+                    <td>{expense.description}</td>
+                    <td>{expense.category}</td>
+                    <td>KES {Number(expense.amount).toFixed(2)}</td>
+                    <td>{expense.notes || "-"}</td>
                     <td>
                       <button
                         type="button"
-                        className="btn-secondary"
-                        onClick={() =>
-                          handleEdit(expense)
-                        }
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => handleEdit(expense)}
                       >
+                        <Pencil size={12} />
                         Edit
                       </button>
-
                       <button
                         type="button"
-                        className="btn-danger"
-                        onClick={() =>
-                          handleDelete(expense)
-                        }
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDelete(expense)}
                       >
+                        <Trash2 size={12} />
                         Delete
                       </button>
                     </td>
@@ -450,11 +353,8 @@ function Expenses() {
           </div>
         )}
 
-        <button
-          type="button"
-          className="btn-secondary refresh-btn"
-          onClick={fetchExpenses}
-        >
+        <button type="button" className="btn btn-secondary" onClick={fetchExpenses}>
+          <RefreshCw size={16} />
           Refresh Expenses
         </button>
       </section>

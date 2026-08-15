@@ -11,8 +11,11 @@
 
 .app-main {
   flex: 1;
-  background: #f9fafb;
+  background: var(--color-bg);
   min-width: 0;
+  padding: var(--space-6);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
@@ -21,6 +24,6 @@
   }
 
   .app-main {
-    padding: 0;
+    padding: var(--space-4);
   }
 }
