@@ -1,53 +1,74 @@
 .sidebar {
-  width: 240px;
+  width: var(--sidebar-width);
   min-height: 100vh;
-  background: #fff;
-  border-right: 1px solid #ddd;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-brand {
-  padding: 20px 24px;
-  border-bottom: 1px solid #eee;
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sidebar-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .sidebar-brand h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: var(--font-size-base);
   font-weight: 700;
-  color: #333;
+  color: var(--color-text);
+  line-height: 1.2;
 }
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  padding: 16px 12px;
-  gap: 4px;
+  padding: var(--space-4) var(--space-3);
+  gap: var(--space-1);
   flex: 1;
 }
 
 .sidebar-link {
-  display: block;
-  padding: 10px 16px;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
   text-decoration: none;
-  color: #555;
-  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
   font-weight: 500;
-  transition: background 0.2s, color 0.2s;
+  transition: background-color var(--transition-fast) var(--ease),
+    color var(--transition-fast) var(--ease);
 }
 
 .sidebar-link:hover {
-  background: #f5f5f5;
-  color: #333;
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 .sidebar-link.active {
-  background: #eef2ff;
-  color: #2563eb;
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
   font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--color-primary);
 }
 
 @media (max-width: 768px) {
@@ -55,22 +76,22 @@
     width: 100%;
     min-height: auto;
     border-right: none;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .sidebar-brand {
-    padding: 16px 20px;
+    padding: var(--space-4) var(--space-5);
   }
 
   .sidebar-nav {
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 8px 12px;
-    gap: 4px;
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-1);
   }
 
   .sidebar-link {
     padding: 8px 12px;
-    font-size: 13px;
+    font-size: var(--font-size-xs);
   }
 }
